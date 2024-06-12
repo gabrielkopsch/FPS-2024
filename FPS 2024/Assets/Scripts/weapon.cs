@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Weapon : MonoBehaviour
 {
-    [SerializeField] WeaponModel weapon;
+    [SerializeField] WeaponData weaponData;
     [SerializeField] Transform firePoint;
     [SerializeField] GameObject bulletImpact;
     [SerializeField] int magazine;
@@ -13,19 +14,19 @@ public class Weapon : MonoBehaviour
 
 
 
-    int monetion;
-
+    int ammo;
     float timeToShoot;
     float timeToReload;
+    bool reloding;
     void Start()
     {
         ModeloAtual = GetComponentInChildren<MeshFilter>();
         materialAtual = GetComponentInChildren<MeshRenderer>();
 
-        magazine = weapon.MagazinCap;
+        magazine = weaponData.MagazinCap;
 
-        ModeloAtual.mesh = weapon.Model;
-        materialAtual.material = weapon.Material;
+        ModeloAtual.mesh = weaponData.Model;
+        materialAtual.material = weaponData.Material;
 
 
     }
@@ -35,41 +36,40 @@ public class Weapon : MonoBehaviour
         StartCoroutine(FireCoroutine());
     }
 
-    private IEnumerator FireCoroutine()
+    IEnumerator FireCoroutine()
     {
-        if (magazine > 0 && Time.time > timeToShoot)
+        if ( Time.time >= timeToShoot  )
         {
             
-                magazine--;
-                timeToShoot = Time.time + 1 / weapon.FireRate;
-
-                Shoot(true);
-                yield return new WaitForSeconds(weapon.TimeBetweenShoots);
+                magazine -= weaponData.BulletsForShoot;
+                timeToShoot = Time.time + 1 / weaponData.FireRate;
+            for (int i =0;i <weaponData.BulletsForShoot;i++)
+            {
+                if(magazine > 0)
+                {
+                    magazine --;
+                    Shoot();
+                    yield return new WaitForSeconds(weaponData.TimeBetweenShoots);
+                }
+            }
             
         }
     }
 
-    private void Shoot(bool crouching)
+    private void Shoot()
     {
-        float range =weapon.Range;
+       
         RaycastHit hit;
 
-        float newSpread = crouching ? weapon.Spread / 2 : weapon.Spread;
+  
 
-        Vector3 direction = new Vector3(Random.Range(-newSpread, newSpread),
-            Random.Range(-newSpread, newSpread), 0) + transform.forward;
+        Vector3 direction = new Vector3(Random.Range(-weaponData.Spread, weaponData.Spread), Random.Range(-weaponData.Spread, weaponData.Spread), 0) + firePoint.forward;
 
-        if (Physics.Raycast(firePoint.position, direction, out hit, range))
-        {
-            Collider obj = hit.transform.GetComponent<Collider>();
-            if (obj != null)
-            {
-                Debug.Log(obj.gameObject.name);
-                Instantiate(bulletImpact, hit.point, Quaternion.LookRotation(hit.normal));
-            }
-        }
-
-        Debug.DrawLine(firePoint.position, firePoint.position + direction * range);
+        if (Physics.Raycast(firePoint.position, direction, out hit,weaponData.Range))
+        {         
+            Instantiate(bulletImpact, hit.point, Quaternion.LookRotation(hit.normal));
+            Debug.DrawLine(firePoint.position, firePoint.position + direction * weaponData.Range);
+        }        
     }
 
     private void Reload()
@@ -79,29 +79,31 @@ public class Weapon : MonoBehaviour
 
     private IEnumerator ReloadCoroutine()
     {
-        int monicaofaltante;
-        if (magazine == 0)
+
+        
+        if (magazine <weaponData.MagazinCap && ammo >0)
         {
-            if (monetion > 0)
+            if(magazine+ ammo >= weaponData.MagazinCap)
             {
 
-
-                if (Time.time > timeToReload)
-                {
-                    monicaofaltante = weapon.MagazinCap - magazine;
-                    magazine = magazine + monicaofaltante;
-
-                    monetion = monetion - monicaofaltante;
-
-                    yield return new WaitForSeconds(weapon.ReloadTime);
-                }
+           
+            ammo -= weaponData.MagazinCap - magazine;
+            magazine = weaponData.MagazinCap;
+           
             }
+            else
+            {
+                magazine += ammo;
+                ammo = 0;
+            }
+            reloding = true;
+            yield return  new WaitForSeconds(weaponData.ReloadTime);
         }
     }
 
-    void UpdateWeapon(WeaponModel novoWeapon)
+    void UpdateWeapon()
     {
-        weapon = novoWeapon;
+        weaponData = new WeaponData();
     }
 
     private void OnDrawGizmos()

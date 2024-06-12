@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu()]
-public class WeaponModel : ScriptableObject
+[CreateAssetMenu()] 
+public class WeaponData : ScriptableObject
 {
     [SerializeField] float damage, range, fireRate, spread, reloadTime, timeBetweenShoots;
     [SerializeField] int magazineCap, bulletsForShoot;
