@@ -17,7 +17,7 @@ public class Weapon : MonoBehaviour
     int ammo;
     float timeToShoot;
     float timeToReload;
-    bool reloding;
+    bool reloading;
     void Start()
     {
         ModeloAtual = GetComponentInChildren<MeshFilter>();
@@ -38,7 +38,7 @@ public class Weapon : MonoBehaviour
 
     IEnumerator FireCoroutine()
     {
-        if ( Time.time >= timeToShoot  )
+        if ( Time.time >= timeToShoot && !reloading   )
         {
             
                 magazine -= weaponData.BulletsForShoot;
@@ -96,7 +96,7 @@ public class Weapon : MonoBehaviour
                 magazine += ammo;
                 ammo = 0;
             }
-            reloding = true;
+            reloading = true;
             yield return  new WaitForSeconds(weaponData.ReloadTime);
         }
     }
