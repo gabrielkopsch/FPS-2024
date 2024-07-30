@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MenuMenager : MonoBehaviour
+public class MenuManager
+    
+    : MonoBehaviour
 {
-    public static MenuMenager Instance;
+    public static MenuManager Instance;
 
     private void Awake()
     {

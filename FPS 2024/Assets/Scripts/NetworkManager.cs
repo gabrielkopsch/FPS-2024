@@ -16,7 +16,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         if (instance =null)
         {
-
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
         }
 
     }
@@ -34,7 +39,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("Connected Sucessful");
-        MenuMenager.Instance.Connected();
+        MenuManager.Instance.Connected();
     }
 
     public void JoinRoom(string roomName, string nickName)
