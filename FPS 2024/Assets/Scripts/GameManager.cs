@@ -5,46 +5,48 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
+    #region Singleton
 
-    #region
     public static GameManager instance;
+
     private void Awake()
     {
         if (instance == null)
         {
-            instance = this; // Define a instância para este objeto
+            instance = this;
         }
         else if (instance != this)
-
-            Destroy(gameObject); // Destroi o objeto se já houver uma instância existente
+        {
+            Destroy(gameObject);
+        }
     }
+
     #endregion
 
     const string playerPrefabPath = "Prefabs/Player";
 
-    int playerInGame;
+    int playersInGame;
     List<PlayerController> playerList = new List<PlayerController>();
     PlayerController playerLocal;
 
-
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        photonView.RPC("AddPlayer",RpcTarget.AllBuffered);
+        photonView.RPC("AddPlayer", RpcTarget.AllBuffered);
     }
+
     private void CreatePlayer()
     {
-        PlayerController player = PhotonNetwork.Instantiate(playerPrefabPath, new Vector3(30,1,30), Quaternion.identity).GetComponent<PlayerController>();
-        player.photonView.RPC("Initialize",RpcTarget.All);
+        PlayerController player = NetworkManager.instance.Instantiate(playerPrefabPath, new Vector3(30, 1, 30), Quaternion.identity).GetComponent<PlayerController>();
+        player.photonView.RPC("Initialize", RpcTarget.All);
     }
+
     [PunRPC]
-    void AddPlayer()
+    private void AddPlayer()
     {
-        playerInGame++;
-        if(playerInGame == PhotonNetwork.PlayerList.Length)
+        playersInGame++;
+        if (playersInGame == PhotonNetwork.PlayerList.Length)
         {
             CreatePlayer();
         }
     }
-
 }

@@ -33,13 +33,13 @@ public class PlayerController : MonoBehaviourPun
         characterController = GetComponent<CharacterController>();
         camTransform = GetComponentInChildren<Camera>().transform;
         playerGravity = GetComponent<PlayerGravity>();
+        weapon = GetComponentInChildren<Weapon>();
     }
 
     [PunRPC]
-
     private void Initialize()
     {
-        if (!photonView.IsMine)
+        if(!photonView.IsMine)
         {
             GetComponentInChildren<Camera>().enabled = false;
             controllerOn = false;
@@ -49,42 +49,41 @@ public class PlayerController : MonoBehaviourPun
     // Update is called once per frame
     void Update()
     {
-        if (controllerOn )
+        if(controllerOn) 
+        { 
+        direction.x = Input.GetAxis("Horizontal");
+        direction.z = Input.GetAxis("Vertical");
+        camDirection.x = Input.GetAxis("Mouse X");
+        camDirection.y = Input.GetAxis("Mouse Y");
+
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            direction.x = Input.GetAxis("Horizontal");
-            direction.z = Input.GetAxis("Vertical");
-            camDirection.x = Input.GetAxis("Mouse X");
-            camDirection.y = Input.GetAxis("Mouse Y");
+            Jump();
+        }
 
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            ThrowGrenade();
+        }
 
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Jump();
-            }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            Crounch();
+        }
 
-            if (Input.GetKeyDown(KeyCode.G))
-            {
-                ThrowGrenade();
-            }
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            shooting = true;
+        }
 
-            if (Input.GetKeyDown(KeyCode.C))
-            {
-                Crounch();
-            }
+        if (Input.GetKeyUp(KeyCode.Mouse0))
+        {
+            shooting = false;
+        }
 
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                shooting = true;
-            }
-
-            if (Input.GetKeyUp(KeyCode.C))
-            {
-                shooting = false;
-            }
-
-            Movement();
-            Rotation();
-            Fire();
+        Movement();
+        Rotation();
+        Fire();
         }
     }
 
