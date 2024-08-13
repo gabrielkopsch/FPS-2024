@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 
-public class PlayerController : MonoBehaviourPun
+public class PlayerController : MonoBehaviourPun, IDamageable
 {
     const float speed = 5;
     const float throwForceForward = 10, throwForceUp = 5;
@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviourPun
     Transform throwPoint;
     [SerializeField, Range(0f, 500f)]
     float mouseSensitivity;
+    float health;
 
     bool controllerOn = true;
 
@@ -39,6 +40,7 @@ public class PlayerController : MonoBehaviourPun
     [PunRPC]
     private void Initialize()
     {
+        weapon.UpdateWeapon(weapon.WeaponData);
         if(!photonView.IsMine)
         {
             GetComponentInChildren<Camera>().enabled = false;
@@ -127,12 +129,21 @@ public class PlayerController : MonoBehaviourPun
 
     void ThrowGrenade()
     {
-        GameObject grenade = Instantiate(grenadePrefab, throwPoint.position, camTransform.rotation);
+        Grenade grenade = NetworkManager.instance.Instantiate("Prefabs/Grenade", throwPoint.position, camTransform.rotation).GetComponent<Grenade>();
 
         Vector3 throwForce = transform.up * throwForceUp + camTransform.forward * throwForceForward;
 
-        grenade.GetComponent<Rigidbody>().AddForce(throwForce, ForceMode.Impulse);
+        grenade.photonView.RPC("Initialize", RpcTarget.All, throwForce);
+    }
 
-        Destroy(grenade, 10);
+    public void TakeDamage(float damage)
+    {
+        photonView.RPC("TakeDamageRPC", RpcTarget.All, damage);
+    }
+
+    [PunRPC]
+    void TakeDamageRPC(float damage)
+    {
+        health -= damage;
     }
 }

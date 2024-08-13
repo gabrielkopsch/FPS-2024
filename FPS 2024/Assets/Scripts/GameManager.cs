@@ -29,6 +29,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     List<PlayerController> playerList = new List<PlayerController>();
     PlayerController playerLocal;
 
+    float timer = 10;
+
     private void Start()
     {
         photonView.RPC("AddPlayer", RpcTarget.AllBuffered);
@@ -48,5 +50,35 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             CreatePlayer();
         }
+    }
+
+    private void Update()
+    {
+        Countdown();
+    }
+
+    private void Countdown()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            timer -= Time.deltaTime;
+            photonView.RPC("UpdateTimerTextRPC", RpcTarget.All, timer);
+            if (timer <= 0)
+            {
+                photonView.RPC("SetGameOverWindow", RpcTarget.All, true);
+            }
+        }
+    }
+
+    [PunRPC]
+    void UpdateTimerTextRPC(float value)
+    {
+        ManagerUI.instance.UpdateTimerText(value);
+    }
+
+    [PunRPC]
+    void SetGameOverWindow(bool active)
+    {
+        ManagerUI.instance.SetGameOver(active);
     }
 }

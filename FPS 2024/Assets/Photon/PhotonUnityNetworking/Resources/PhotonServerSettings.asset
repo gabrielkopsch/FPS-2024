@@ -41,6 +41,11 @@ MonoBehaviour:
   - RespawnSpaceship
   - LoadSceneRPC
   - AddPlayer
+  - Initialize
+  - ThrowGrenadeRPC
+  - TakeDamageRPC
+  - UpdateTimerTextRPC
+  - SetGameOverWindow
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

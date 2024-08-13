@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca21c3e1f8b51334dab51e8082ea9a47, type: 3}
   m_Name: New Weapon Data
   m_EditorClassIdentifier: 
-  damage: 0
+  damage: 10
   range: 20
   fireRate: 10
   spread: 0

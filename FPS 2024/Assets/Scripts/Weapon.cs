@@ -16,13 +16,13 @@ public class Weapon : MonoBehaviour
     float timeToShoot;
     bool reloading;
 
+    public WeaponData WeaponData { get => weaponData; }
+
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         meshFilter = GetComponentInChildren<MeshFilter>();
         meshRenderer = GetComponentInChildren<MeshRenderer>();
-
-        UpdateWeapon(weaponData);
     }
 
     private void Update()
@@ -109,7 +109,7 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    void UpdateWeapon(WeaponData newWeapon)
+    public void UpdateWeapon(WeaponData newWeapon)
     {
         weaponData = newWeapon;
         meshFilter.mesh = weaponData.Model;
